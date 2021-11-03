@@ -80,7 +80,7 @@ oracle.install.db.OSDBA_GROUP=dba
 # The OSOPER_GROUP is the OS group which is to be granted SYSOPER privileges.
 # The value to be specified for OSOPER group is optional.
 #------------------------------------------------------------------------------
-oracle.install.db.OSOPER_GROUP=
+oracle.install.db.OSOPER_GROUP=###OSOPER_GROUP###
 
 #------------------------------------------------------------------------------
 # The OSBACKUPDBA_GROUP is the OS group which is to be granted SYSBACKUP privileges.

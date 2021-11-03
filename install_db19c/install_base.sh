@@ -58,6 +58,7 @@ function check_groups {
   case $ORACLE_GROUPS in
     default)
       OINSTALL_GROUP=oinstall
+      OSOPER_GROUP=""
       BACKUP_GROUP=backupdba
       DATAGUARD_GROUP=dgdba
       OKM_GROUP=kmdba
@@ -66,6 +67,7 @@ function check_groups {
 
     oinstall_dba)
       OINSTALL_GROUP=oinstall
+      OSOPER_GROUP=dba
       BACKUP_GROUP=dba
       DATAGUARD_GROUP=dba
       OKM_GROUP=dba
@@ -74,6 +76,16 @@ function check_groups {
 
     dba)
       OINSTALL_GROUP=dba
+      OSOPER_GROUP=dba
+      BACKUP_GROUP=dba
+      DATAGUARD_GROUP=dba
+      OKM_GROUP=dba
+      RAC_GROUP=dba
+      ;;
+
+    custom)
+      OINSTALL_GROUP=oinstall
+      OSOPER_GROUP=""
       BACKUP_GROUP=dba
       DATAGUARD_GROUP=dba
       OKM_GROUP=dba
@@ -228,6 +240,7 @@ function setup_rsp_file {
   sed -i -e "s|###ORACLE_BASE###|$ORACLE_BASE|g" $rsp_file
   sed -i -e "s|###ORACLE_HOME###|$ORACLE_HOME|g" $rsp_file
   sed -i -e "s|###OINSTALL_GROUP###|$OINSTALL_GROUP|g" $rsp_file
+  sed -i -e "s|###OSOPER_GROUP###|$OSOPER_GROUP|g" $rsp_file
   sed -i -e "s|###BACKUP_GROUP###|$BACKUP_GROUP|g" $rsp_file
   sed -i -e "s|###DATAGUARD_GROUP###|$DATAGUARD_GROUP|g" $rsp_file
   sed -i -e "s|###OKM_GROUP###|$OKM_GROUP|g" $rsp_file
@@ -243,7 +256,7 @@ function usage {
 Usage: $PROG [-f BaseResponseFile -g Groups -e EnvFile -i GoldImage -v OracleInventoryPath -r -p -h] 
   -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
   -f: base response file (default: base_install_db19c.rsp for single instance)
-  -g : groups {default | oinstall_dba | dba}
+  -g : groups {default | oinstall_dba | dba | custom}
   -h: print usage
   -i: gold image for 19c installations (default: base 19c)
   -p: do not ignore prereq failures (default: -ignorePrereqFailure)
@@ -294,4 +307,3 @@ check_obase_ohome
 check_env
 
 install_db_home
-  

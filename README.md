@@ -37,7 +37,7 @@ Oracle installation needs some base environment variables. You can set them on y
     export TMPDIR=/tmp
     umask 022
 
-The recommended way is to use different groups for oracle user. But some DBAs prefer to use oinstall & dba or just dba group. Use the option **-g** in such a case.
+The recommended way is to use different groups for oracle user. But some DBAs prefer to use oinstall & dba or just dba group. Use the option **-g** in such a case. If you have some specific groups, you should choose *custom* group option and modify this **install_base.sh** script.
 
 The first Oracle database installation on the server does not have */etc/oraInst.loc* file. In this case you should use **-v** option to set the Oracle Inventory directory.
 
