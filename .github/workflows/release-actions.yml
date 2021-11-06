@@ -1,8 +1,0 @@
-name: release-actions
-on: [push]
-jobs:
-  create-release:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - run: tar cvf oracle_scripts.tar .
