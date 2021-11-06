@@ -224,6 +224,11 @@ function install_db_home {
     rc=0
   fi
 
+  if [ $rc = "0" ] && [ -d /opt/oracle.cellos ]; then
+    echo "*** Exadata only: "
+    echo "Consider copying the files from the existing ORACLE_HOME/assistants/dbca/templates to the new $ORACLE_HOME/assistants/dbca/templates directory."
+  fi
+  
   return $rc
 }
 
@@ -296,9 +301,9 @@ fi
 
 if [ -z "$BASE_RSP_FILE" ]; then
   if [ "$RAC" = "yes" ]; then
-    BASE_RSP_FILE=RAC_RSP_FILE
+    BASE_RSP_FILE=$RAC_RSP_FILE
   else
-    BASE_RSP_FILE=DB_RSP_FILE
+    BASE_RSP_FILE=$DB_RSP_FILE
   fi
 fi
 check_inventory
