@@ -1,6 +1,6 @@
 # Oracle Database Scripts  
 
-## Installation scripts  
+## Database Installation scripts  
 
 ### Gold images (19c)  
 
@@ -111,3 +111,47 @@ Usually you would like to copy these files to all other cluster nodes as well:
     for host in ... ; do
     scp * $host:$PWD
     done
+
+## Database Creation scripts  
+
+## create_db.sh Script Description
+
+The script create_db.sh uses dbca and provided response file templates to create a new database. Script parameters:  
+
+    Usage: create_db.sh -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType -e EnvFile -p Password -i InitParams -f FRA -g DATA -z FRASizeMB -h]
+
+    -c: CDB database (default: non-CDB database)
+    -d: database name (DB_NAME.DB_DOMAIN)
+    -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
+    -f: FRA ASM Diskgroup or FRA directory (default RAC: FRA)
+    -g: database directory or DATA ASM Diskgroup (default: /u01/oracle/databases/19c; RAC: DATA)
+    -h: print usage  
+    -i: comma separated init.ora parameters 
+    -n: RAC nodes
+    -p: database password (Default oracle)
+    -r: RAC database
+    -t: database template type {default | custom | TemplatePath} (default: default)
+    -u: database unique name (default: database name)
+    -z: FRA size im MB (default: 25000)
+
+## Examples
+
+### Single instance non CDB database
+
+    ./create_db.sh -d mydb -u mydb_dc1 -e ~/env/db19a -z 5000 -f /u01/oracle/databases/fra  
+
+This will create a mydb database with the database unique name *mydb_dc1*. The domain parameter is empty. The environment file *~/env/db19a* contains Oracle environment variables (ORACLE_BASE, ORACLE_HOME, NLS_LANG, PATH, LD_LIBRARY_PATH etc). This database does not use ASM. Datafiles will be placed using OMF in the default directory */u01/oracle/databases/19c*. FRA is */u01/oracle/databases/fra* and it's max size is *5000* MB.
+
+If you want to specify a domain name, you have to add it to the database name option **-d**.
+
+    ./create_db.sh -d mydb.world.com -u mydb_dc1 -e ~/env/db19a -z 5000 -f /u01/oracle/databases/fra  
+
+### Single instance CDB database
+
+Use **-c** option to create a CDB database:
+
+    ./create_db.sh -c -d mydb.world.com -u mydb_dc1 -e ~/env/db19a -z 5000 -f /u01/oracle/databases/fra -g /u01/oracle/databases
+
+This will create a CDB database *mydb.world.com* with the unique name *mydb_dc1*. The database uses OMF and the files will be placed into the directory */u01/oracle/databases*.
+
+
