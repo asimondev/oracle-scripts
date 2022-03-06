@@ -18,7 +18,7 @@ You can use both base image and custom gold image to install using **install_bas
 
     Usage: install_base.sh [-f BaseResponseFile -g Groups -e EnvFile -i GoldImage -v OracleInventoryPath -r -p -h] 
       -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
-      -f: base response file (default: base_install_db19c.rsp for single instance)
+      -f: base response file (default: base_install_db19c.rsp for single instance and base_install_rac19c.rsp for RAC)
       -g : groups {default | oinstall_dba | dba}
       -h: print usage
       -i: gold image for 19c installations (default: base 19c)
@@ -70,6 +70,10 @@ The base release zip file can be used as gold image for the first installation. 
     ./install_base.sh -e ~/env/inst_db19a -i /stage/Oracle/db19c/LINUX.X64_193000_db_home.zip
 
 Check for the message *Successfully Setup Software with warning(s).* and run *root.sh* script as root user.
+
+You can use **-r** option to install the database software on all nodes in this RAC cluster:
+
+    ./install_base.sh -r -e ~/env/inst_db19a -i /stage/Oracle/db19c/LINUX.X64_193000_db_home.zip
 
 ##### Creating New Gold Image
 
