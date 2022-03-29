@@ -185,14 +185,14 @@ else
 fi
 
 if [ -z "$RAC" ] ; then
-  if ! -d $DATA ; then
+  if ! [ -d $DATA ]; then
     if ! mkdir -p $DATA ; then
       echo "Error: can not create database directory $DATA"
       exit 1
     fi
   fi
 
-  if ! -d $FRA ; then
+  if ! [ -d $FRA ]; then
     if ! mkdir -p $FRA ; then
       echo "Error: can not create FRA directory $FRA"
       exit 1
