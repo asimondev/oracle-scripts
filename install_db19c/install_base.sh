@@ -6,6 +6,25 @@
 # available gold image instead of the base installation zip file.
 #
 
+function usage {
+  cat<<EOF
+Usage: $PROG [-f BaseResponseFile -g Groups -e EnvFile -i GoldImage -v OracleInventoryPath [-r {-l | -n RAC-Nodes}] -p -h] 
+  -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
+  -f: base response file (default: base_install_db19c.rsp for single instance)
+  -g : groups {default | oinstall_dba | dba | custom}
+  -h: print usage
+  -i: gold image for 19c installations (default: base 19c)
+  -l: local RAC node only.
+  -n: RAC nodes for installation (default: all RAC nodes).
+  -p: do not ignore prereq failures (default: -ignorePrereqFailure)
+  -r: RAC 
+  -v: Oracle Inventory path (default: inventory_loc from /etc/oraInst.loc)
+
+EOF
+
+  exit 1
+}
+
 PROG="install_base.sh"
 DB_VER=""
 ENV_FILE=""
@@ -26,6 +45,7 @@ ORACLE_GROUPS="default"
 IGNORE_PREREQ="yes"
 RAC=""
 RAC_NODES=""
+LOCAL_NODE="no"
 
 function check_inventory {
   if [ -n "$ORACLE_INVENTORY" ]; then
@@ -182,6 +202,11 @@ function setup_rac {
     exit 1
   fi
 
+  if [ $LOCAL_NODE = "yes" ]; then
+    RAC_NODES="$(hostname -s)"
+    return
+  fi
+
   local nodes=""
   while read node ; do
     [ -n "$nodes" ] && nodes="${nodes},"
@@ -256,24 +281,8 @@ function setup_rsp_file {
   fi
 }
 
-function usage {
-  cat<<EOF
-Usage: $PROG [-f BaseResponseFile -g Groups -e EnvFile -i GoldImage -v OracleInventoryPath -r -p -h] 
-  -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
-  -f: base response file (default: base_install_db19c.rsp for single instance)
-  -g : groups {default | oinstall_dba | dba | custom}
-  -h: print usage
-  -i: gold image for 19c installations (default: base 19c)
-  -p: do not ignore prereq failures (default: -ignorePrereqFailure)
-  -r: RAC 
-  -v: Oracle Inventory path (default: inventory_loc from /etc/oraInst.loc)
 
-EOF
-
-  exit 1
-}
-
-while getopts "e:f:g:hi:prv:" opt; do
+while getopts "e:f:g:hi:lprv:" opt; do
 
   case $opt in
     e) ENV_FILE="$OPTARG" ;;
@@ -281,6 +290,7 @@ while getopts "e:f:g:hi:prv:" opt; do
     g) ORACLE_GROUPS="$OPTARG" ;;    
     h) usage ;;
     i) BASE_ZIP_FILE="$OPTARG" ;;
+    l) LOCAL_NODE="yes" ;;
     p) IGNORE_PREREQ="no" ;;
     r) RAC="yes" ;;
     v) ORACLE_INVENTORY="$OPTARG" ;;
