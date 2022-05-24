@@ -19,7 +19,7 @@ You can use both base image and custom gold image to install using **install_bas
     Usage: install_base.sh [-f BaseResponseFile -g Groups -e EnvFile -i GoldImage -v OracleInventoryPath -r -p -h] 
       -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
       -f: base response file (default: base_install_db19c.rsp for single instance and base_install_rac19c.rsp for RAC)
-      -g : groups {default | oinstall_dba | dba}
+      -g : groups {default | oinstall_dba | dba | custom}
       -h: print usage
       -i: gold image for 19c installations (default: base 19c)
       -p: do not ignore prereq failures (default: -ignorePrereqFailure)
