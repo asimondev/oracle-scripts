@@ -224,7 +224,7 @@ fi
 OMF="-useOMF true"
 DBCA_CDB=""
 TEMPLATE_NAME=" -templateName $TMPL_FILE "
-DATAFILE_DEST="-datafileDestination $DB_DIR"
+DATAFILE_DEST="-datafileDestination $DATA"
 
 
 RAC_OPTONS=""

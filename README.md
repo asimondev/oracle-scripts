@@ -1,5 +1,7 @@
 # Oracle Database Scripts  
 
+Version: 1.0.1
+
 ## Database Installation scripts  
 
 ### Gold images (19c)  
