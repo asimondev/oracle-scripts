@@ -1,6 +1,6 @@
 # Oracle Database Scripts  
 
-Version: 1.0.1
+Version: 1.0.3
 
 ## Database Installation scripts  
 
@@ -136,6 +136,7 @@ The script create_db.sh uses dbca and provided response file templates to create
     -n: RAC nodes
     -p: database password (Default oracle)
     -r: RAC database
+    -s: database character set (default: AL32UTF8)
     -t: database template type {default | custom | TemplatePath} (default: default)
     -u: database unique name (default: database name)
     -z: FRA size im MB (default: 25000)
@@ -161,3 +162,10 @@ Use **-c** option to create a CDB database:
 This will create a CDB database *mydb.world.com* with the unique name *mydb_dc1*. The database uses OMF and the files will be placed into the directory */u01/oracle/databases*.
 
 
+### Create a CDB RAC database with specific character set.
+
+Use **-r** and **-c** options to create a CDB RAC database.
+
+    ./create_db.sh -c -r -d mydb.world.com -u mydb_ffm -e ~/env/rac19a  -f fra -g data -z 1000 -s WE8ISO8859P1
+
+This will create a new CDB RAC database with database name **mydb**, domain name **world.com** and database unique name **mydb_ffm**. The database files will be located into the ASM diskgroups DATA and FRA. The database will use the **WE8ISO8859P1** character set.

@@ -32,10 +32,11 @@ DEFAULT_CDB_SGA="8192"
 DEFAULT_CDB_PGA="2048"
 DEFAULT_NONCDB_SGA="4096"
 DEFAULT_NONCDB_PGA="1024"
+CHARSET=""
 
 function usage {
   cat<<EOF
-Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType -e EnvFile -p Password -i InitParams -f FRA -g DATA -z FRASizeMB -h]
+Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType -e EnvFile -p Password -i InitParams -f FRA -g DATA -z FRASizeMB -s CharacterSet -h]
   -c: CDB database (default: non-CDB database)
   -d: database name (DB_NAME.DB_DOMAIN)
   -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
@@ -44,8 +45,9 @@ Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType -e EnvFile 
   -h: print usage  
   -i: comma separated init.ora parameters 
   -n: RAC nodes
-  -p: database password (Default oracle)
+  -p: database password (default oracle)
   -r: RAC database
+  -s: database character set (default: AL32UTF8)
   -t: database template type {default | custom | TemplatePath} (default: default)
   -u: database unique name (default: database name)
   -z: FRA size im MB (default: ${FRA_SIZE})
@@ -150,7 +152,7 @@ function setup_rac {
 }
 
 
-while getopts "cd:e:f:g:hi:n:p:rt:u:z:" opt; do
+while getopts "cd:e:f:g:hi:n:p:rs:t:u:z:" opt; do
   case $opt in
     c) CDB="cdb" ;;
     d) DB_NAME="$OPTARG" ;;
@@ -162,6 +164,7 @@ while getopts "cd:e:f:g:hi:n:p:rt:u:z:" opt; do
     n) NODES="$OPTARG" ;;
     p) PWD="$OPTARG" ;;
     r) RAC="yes" ;;
+    s) CHARSET="$OPTARG" ;;
     t) DB_TYPE="$OPTARG" ;;
     u) DB_UNIQUE_NAME="$OPTARG" ;;
     z) FRA_SIZE="$OPTARG" ;;
@@ -260,7 +263,11 @@ if [ -z "$RAC" ]; then
   RECO="${RECO} -recoveryAreaSize ${FRA_SIZE}"
 fi
 
-if dbca -createDatabase -silent \
+if [ -n "$CHARSET" ]; then
+  CHARSET="-characterSet $CHARSET"
+fi
+
+if dbca -createDatabase -silent $CHARSET \
     -responseFile $RSP_FILE \
     -gdbName $DB_NAME -sid $SID \
     -sysPassword $PWD -systemPassword $PWD \

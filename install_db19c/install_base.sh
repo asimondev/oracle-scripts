@@ -8,7 +8,7 @@
 
 function usage {
   cat<<EOF
-Usage: $PROG [-f BaseResponseFile -g Groups -e EnvFile -i GoldImage -v OracleInventoryPath [-r {-l | -n RAC-Nodes}] -p -h] 
+Usage: $PROG [-f BaseResponseFile -g Groups ] -e EnvFile -i GoldImage [-v OracleInventoryPath -r {-l | -n RAC-Nodes}] -p -h] 
   -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
   -f: base response file (default: base_install_db19c.rsp for single instance)
   -g : groups {default | oinstall_dba | dba | custom}
