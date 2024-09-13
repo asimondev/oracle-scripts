@@ -1,6 +1,6 @@
 # Oracle Database Scripts  
 
-Version: 1.0.3
+Version: 1.0.4
 
 ## Database Installation scripts  
 
@@ -39,7 +39,13 @@ Oracle installation needs some base environment variables. You can set them on y
     export TMPDIR=/tmp
     umask 022
 
-The recommended way is to use different groups for oracle user. But some DBAs prefer to use oinstall & dba or just dba group. Use the option **-g** in such a case. If you have some specific groups, you should choose *custom* group option and modify this **install_base.sh** script.
+The recommended way is to use different groups for oracle user. But some DBAs prefer to use *oinstall* and *dba* groups only or just *dba* group. Use the option **-g** in such a case. 
+If you have some specific groups, you should choose *custom* group option and modify 
+the **install_base.sh** script. 
+
+You can see your current UNIX groups using **id** LINUX command. If you want to clone the 
+existing $ORACLE_HOME, you should check the file *$ORACLE_HOME/rdbms/lib/config.c* for the
+used groups.
 
 The first Oracle database installation on the server does not have */etc/oraInst.loc* file. In this case you should use **-v** option to set the Oracle Inventory directory.
 
@@ -118,6 +124,7 @@ Usually you would like to copy these files to all other cluster nodes as well:
     scp * $host:$PWD
     done
 
+
 ## Database Creation scripts  
 
 ## create_db.sh Script Description
@@ -132,9 +139,10 @@ The script create_db.sh uses dbca and provided response file templates to create
     -f: FRA ASM Diskgroup or FRA directory (default RAC: FRA)
     -g: database directory or DATA ASM Diskgroup (default: /u01/oracle/databases/19c; RAC: DATA)
     -h: print usage  
-    -i: comma separated init.ora parameters 
-    -n: RAC nodes
-    -p: database password (Default oracle)
+    -i: comma separated init.ora parameters
+    -j: print but do not execute the commands (just print)
+    -n: comma-separated RAC nodes (default: all RAC nodes)
+    -p: database password (default: oracle)
     -r: RAC database
     -s: database character set (default: AL32UTF8)
     -t: database template type {default | custom | TemplatePath} (default: default)
@@ -143,7 +151,7 @@ The script create_db.sh uses dbca and provided response file templates to create
 
 ## Examples
 
-### Single instance non CDB database
+### Single instance non CDB database.
 
     ./create_db.sh -d mydb -u mydb_dc1 -e ~/env/db19a -z 5000 -f /u01/oracle/databases/fra  
 
@@ -153,7 +161,7 @@ If you want to specify a domain name, you have to add it to the database name op
 
     ./create_db.sh -d mydb.world.com -u mydb_dc1 -e ~/env/db19a -z 5000 -f /u01/oracle/databases/fra  
 
-### Single instance CDB database
+### Single instance CDB database.
 
 Use **-c** option to create a CDB database:
 
@@ -169,3 +177,38 @@ Use **-r** and **-c** options to create a CDB RAC database.
     ./create_db.sh -c -r -d mydb.world.com -u mydb_ffm -e ~/env/rac19a  -f fra -g data -z 1000 -s WE8ISO8859P1
 
 This will create a new CDB RAC database with database name **mydb**, domain name **world.com** and database unique name **mydb_ffm**. The database files will be located into the ASM diskgroups DATA and FRA. The database will use the **WE8ISO8859P1** character set.
+
+### Single instance CDB database with non-default database block size.
+
+The default template type uses *$ORACLE_HOME/assistants/dbca/templates/General_Purpose.dbc* DBCA  template. This template restores database files with 8KB database block size. If you
+want to specify different block size, you have to set both the init.ora parameter 
+(**-i** option) and the database template type parameter (**-t** option). The *custom* 
+template type uses the *$ORACLE_HOME/assistants/dbca/templates/New_Database.dbt* 
+DBCA template, which creates a new database running all catalog scripts.
+
+    ./create_db.sh -c -d mydb.world.com -u mydb_dc1 -e ~/env/db19a -z 5000 -f /u01/oracle/databases/fra -g /u01/oracle/databases -i db_block_size=16384 -t custom
+
+
+### How to delete a database using DBCA?
+
+You can delete a database using DBCA from the command line. The database must be
+up and running and you have to know the *SYS* database user password. The *-silent*
+option will run the *dbca* command immediately.
+
+Single instance database:
+
+`dbca -silent -deleteDatabase -sourceDB mydb -sysDBAUserName sys -sysDBAPassword oracle`
+
+This command will delete the database with the $ORACLE_SID *mydb* using the *SYS* user with the password *oracle*.
+
+RAC database:
+
+Please use the value of DB_UNIQUE_NAME parameter instead of $ORACLE_SID.
+
+`dbca -silent -deleteDatabase -sourceDB mydb_primary -sysDBAUserName sys -sysDBAPassword oracle`
+
+This command will delete the RAC database with the database unique 
+name *mydb_primary*.
+
+Further documentation:
+* [Cloning of database homes](https://github.com/asimondev/oracle-scripts/blob/master/docs/CLONING.md)

@@ -33,10 +33,11 @@ DEFAULT_CDB_PGA="2048"
 DEFAULT_NONCDB_SGA="4096"
 DEFAULT_NONCDB_PGA="1024"
 CHARSET=""
+DRY_RUN=""
 
 function usage {
   cat<<EOF
-Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType -e EnvFile -p Password -i InitParams -f FRA -g DATA -z FRASizeMB -s CharacterSet -h]
+Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType -e EnvFile -p Password -i InitParams -f FRA -g DATA -z FRASizeMB -s CharacterSet -h -j]
   -c: CDB database (default: non-CDB database)
   -d: database name (DB_NAME.DB_DOMAIN)
   -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
@@ -44,6 +45,7 @@ Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType -e EnvFile 
   -g: database directory or DATA ASM Diskgroup (default: ${DB_DIR}; RAC: $DATA_DG)
   -h: print usage  
   -i: comma separated init.ora parameters 
+  -j: print but do not execute the commands (just print)
   -n: RAC nodes
   -p: database password (default oracle)
   -r: RAC database
@@ -152,7 +154,7 @@ function setup_rac {
 }
 
 
-while getopts "cd:e:f:g:hi:n:p:rs:t:u:z:" opt; do
+while getopts "cd:e:f:g:hi:jn:p:rs:t:u:z:" opt; do
   case $opt in
     c) CDB="cdb" ;;
     d) DB_NAME="$OPTARG" ;;
@@ -161,6 +163,7 @@ while getopts "cd:e:f:g:hi:n:p:rs:t:u:z:" opt; do
     g) DATA="$OPTARG" ;;
     h) usage ;;
     i) INIT_PARAMS="$OPTARG" ;;
+    j) DRY_RUN="YES" ;;
     n) NODES="$OPTARG" ;;
     p) PWD="$OPTARG" ;;
     r) RAC="yes" ;;
@@ -243,8 +246,8 @@ check_memory $CDB
 if [ -n "$DB_UNIQUE_NAME" ]; then
   if [ -n "$DB_NAME" ]; then
     SID=$DB_NAME
-    [ -n "$INIT_PARAMS" ] && INIT_PARAMS="{INIT_PARAMS},"
-    INIT_PARAMS="db_name=${DB_NAME%%.*},db_unique_name=${DB_UNIQUE_NAME%%.*}"
+    [ -n "$INIT_PARAMS" ] && INIT_PARAMS="${INIT_PARAMS},"
+    INIT_PARAMS="${INIT_PARAMS}db_name=${DB_NAME%%.*},db_unique_name=${DB_UNIQUE_NAME%%.*}"
   else
     SID=$DB_UNIQUE_NAME
   fi
@@ -267,13 +270,23 @@ if [ -n "$CHARSET" ]; then
   CHARSET="-characterSet $CHARSET"
 fi
 
-if dbca -createDatabase -silent $CHARSET \
-    -responseFile $RSP_FILE \
-    -gdbName $DB_NAME -sid $SID \
-    -sysPassword $PWD -systemPassword $PWD \
-    $DATAFILE_DEST $RAC_OPTIONS $INIT_PARAMS $RECO \
-    $TEMPLATE_NAME $DBCA_CDB $OMF ; then
-  echo ""
-  echo "Database $DB_UNIQUE_NAME created successfully."
-  echo ""
+DBCA_CMD=$(echo "dbca -createDatabase -silent $CHARSET \
+ -responseFile $RSP_FILE \
+ -gdbName $DB_NAME -sid $SID \
+ -sysPassword $PWD -systemPassword $PWD \
+ $DATAFILE_DEST $RAC_OPTIONS $INIT_PARAMS $RECO \
+ $TEMPLATE_NAME $DBCA_CDB $OMF")
+
+if [ -n "$DRY_RUN" ]; then
+  echo -e "\n=====> Response file: $RSP_FILE"
+  cat $RSP_FILE
+  echo -e "\n=====> DBCA command:"
+  echo "$DBCA_CMD"
+  exit 
+fi
+
+if $DBCA_CMD ; then
+  echo -e "\nDatabase $DB_UNIQUE_NAME created successfully.\n"
+else
+  echo -e "\nDatabase $DB_UNIQUE_NAME could not be created.\n"
 fi
