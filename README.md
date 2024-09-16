@@ -1,6 +1,6 @@
 # Oracle Database Scripts  
 
-Version: 1.0.4
+Version: 1.0.5
 
 ## Database Installation scripts  
 
@@ -211,4 +211,4 @@ This command will delete the RAC database with the database unique
 name *mydb_primary*.
 
 Further documentation:
-* [Cloning of database homes](https://github.com/asimondev/oracle-scripts/blob/master/docs/CLONING.md)
+* [Cloning of database homes](https://github.com/asimondev/oracle-scripts/blob/master/docs/cloning.md)
