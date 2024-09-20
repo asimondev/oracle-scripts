@@ -70,7 +70,7 @@ chmod 755 ~/set_dbhome02
 ```
 
 Usually you would at first download and install OPatch utitlity (database patch with the id
-*6880880*) in the new ORACLE_HOME.
+*6880880*) in the new ORACLE_HOME. You can find OPatch in *MOS*: [Download OPatch](http://updates.oracle.com/ARULink/PatchDetails/process_form?patch_num=6880880)
 ```
 . ~/set_dbhome02
 cd $ORACLE_HOME
@@ -124,16 +124,6 @@ If you use RAC, you have to run **srvctl** to set the new ORACLE_HOME:
 
 For a single instance database you have to copy the spfile and password files to
 the new *$ORACLE_HOME/dbs* directory.
-
-
-## How to delete the existing ORACLE_HOME?
-
-Please re-check, that the corresponding Oracle environment variables are set to the **old**
-and not to the **current** ORACLE_HOME.
-
-You can delete the existing ORACLE_HOME using the following command:
-
-`$ORACLE_HOME/deinstall/deinstall`
 
 ## How to patch RAC faster?
 

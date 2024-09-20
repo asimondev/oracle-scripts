@@ -34,15 +34,19 @@ DEFAULT_NONCDB_SGA="4096"
 DEFAULT_NONCDB_PGA="1024"
 CHARSET=""
 DRY_RUN=""
+DBCA_ARGS=""
 
 function usage {
   cat<<EOF
-Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType -e EnvFile -p Password -i InitParams -f FRA -g DATA -z FRASizeMB -s CharacterSet -h -j]
+Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType \
+-e EnvFile -p Password -i InitParams -f FRA -g DATA -z FRASizeMB \
+-s CharacterSet -a DBCA_Options -h -j]
+  -a: Additional DBCA options for -createDatabase
   -c: CDB database (default: non-CDB database)
   -d: database name (DB_NAME.DB_DOMAIN)
   -e: file with environment variables ORACLE_BASE, ORACLE_HOME, PATH  
-  -f: FRA ASM Diskgroup or FRA directory (default RAC: ${FRA_DG})
-  -g: database directory or DATA ASM Diskgroup (default: ${DB_DIR}; RAC: $DATA_DG)
+  -f: FRA ASM disk group or FRA directory (default RAC: ${FRA_DG})
+  -g: DATA ASM disk group or DATA database directory (default: ${DB_DIR}; RAC: $DATA_DG)
   -h: print usage  
   -i: comma separated init.ora parameters 
   -j: print but do not execute the commands (just print)
@@ -154,8 +158,9 @@ function setup_rac {
 }
 
 
-while getopts "cd:e:f:g:hi:jn:p:rs:t:u:z:" opt; do
+while getopts "a:cd:e:f:g:hi:jn:p:rs:t:u:z:" opt; do
   case $opt in
+    a) DBCA_ARGS="$OPTARG" ;;
     c) CDB="cdb" ;;
     d) DB_NAME="$OPTARG" ;;
     e) ENV_FILE="$OPTARG" ;;
@@ -275,7 +280,7 @@ DBCA_CMD=$(echo "dbca -createDatabase -silent $CHARSET \
  -gdbName $DB_NAME -sid $SID \
  -sysPassword $PWD -systemPassword $PWD \
  $DATAFILE_DEST $RAC_OPTIONS $INIT_PARAMS $RECO \
- $TEMPLATE_NAME $DBCA_CDB $OMF")
+ $TEMPLATE_NAME $DBCA_CDB $OMF $DBCA_ARGS")
 
 if [ -n "$DRY_RUN" ]; then
   echo -e "\n=====> Response file: $RSP_FILE"
