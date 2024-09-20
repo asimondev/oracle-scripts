@@ -1,6 +1,6 @@
 # Oracle Database Scripts  
 
-Version: 1.0.6
+Version: 1.0.7
 
 This repository contains Bash scripts for installing Oracle database software and creating
 a new database in silent mode. The scripts were tested on Oracle Linux only.
@@ -9,11 +9,15 @@ If you want to use these scripts you have to execute the following steps:
 
 1. Click on the text labeled with *"Latest"* on the link side of this GitHub repository.
 1. Download the *oracle_scripts.tar* file. This file contains Bash scripts and response files.
-1. Copy this file to the target database server (for instance into the */tmp* directory). `scp oracle_scripts.tar ServerName:/tmp`
+1. Copy this file to the target database server (for instance into the */tmp* directory).
 1. Create a new directory (for instance */home/oracle/oracle_scripts*") and unpack the *oracle_scripts.tar* file in this directory.
 ```
+scp oracle_scripts.tar DatabaseServer:/tmp
+...
+ssh oracle@DatabaseServer
+...
 mkdir /home/oracle/oracle_scripts
-cd /home/oracle/scripts
+cd /home/oracle/oracle_scripts
 tar xvf /tmp/oracle_scripts.tar
 ```
 
