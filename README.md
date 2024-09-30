@@ -1,9 +1,10 @@
 # Oracle Database Scripts  
 
-Version: 1.0.7
+Version: 1.0.8
 
-This repository contains Bash scripts for installing Oracle database software and creating
-a new database in silent mode. The scripts were tested on Oracle Linux only.
+This repository contains Bash scripts for installing Oracle database software 
+and creating a new database in silent mode. The scripts were tested on 
+Oracle Linux only.
 
 If you want to use these scripts you have to execute the following steps:
 
@@ -24,6 +25,8 @@ tar xvf /tmp/oracle_scripts.tar
 The database software installation script *install_base.sh* is located in 
 the *install_db19* directory. The database creation script *create_db.sh* is in the
 *create_db19* directory. All scripts can be used both for the single instance and RAC. 
+
+For the whole documentation see [Oracle Scripts](https://asimondev.github.io/docs/oracle_scripts/)
 
 ## Database Software Installation.
 
@@ -100,9 +103,10 @@ Before using the gold image you have to check the user's groups and environment 
 
 Do not forget to run *root.sh* script as root on the corresponding server(s).
 
-### Further documentation.
+### See Also:
 
-[Installing and cloning of database homes](https://github.com/asimondev/oracle-scripts/blob/master/docs/installing_and_cloning.md)
+[Installing and Cloning of Database Homes](https://asimondev.github.io/docs/oracle_scripts/installing_and_cloning/)
+
 
 ## Database Creation.
 
@@ -187,7 +191,7 @@ Use **-r** and **-c** options to create a CDB RAC database.
 
 This will create a new CDB RAC database with database name **mydb**, domain name **world.com** and database unique name **mydb_ffm**. The database files will be located into the ASM disk groups DATA and FRA.
 
-### Further documentation.
+### See Also:
 
-[Database creation](https://github.com/asimondev/oracle-scripts/blob/master/docs/database_creation.md)
+[Database Creation](https://asimondev.github.io/docs/oracle_scripts/database_creation/)
 
