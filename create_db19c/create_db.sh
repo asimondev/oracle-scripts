@@ -20,7 +20,6 @@ CDB="noncdb"
 DB=""
 DB_NAME=""
 DB_UNIQUE_NAME=""
-SID=""
 RAC=""
 NODES=""
 RAC_NODES=""
@@ -35,12 +34,14 @@ DEFAULT_NONCDB_PGA="1024"
 CHARSET=""
 DRY_RUN=""
 DBCA_ARGS=""
+SID=""
+SID_PREFIX=""
 
 function usage {
   cat<<EOF
 Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType \
 -e EnvFile -p Password -i InitParams -f FRA -g DATA -z FRASizeMB \
--s CharacterSet -a DBCA_Options -h -j]
+-s CharacterSet -a DBCA_Options -x SID_Prefix -h -j]
   -a: Additional DBCA options for -createDatabase
   -c: CDB database (default: non-CDB database)
   -d: database name (DB_NAME.DB_DOMAIN)
@@ -56,6 +57,7 @@ Usage: $PROG -d DbName [-u DbUniqueName -c -n RAC_Nodes -r -t DBType \
   -s: database character set (default: AL32UTF8)
   -t: database template type {default | custom | TemplatePath} (default: default)
   -u: database unique name (default: database name)
+  -x: SID prefix
   -z: FRA size im MB (default: ${FRA_SIZE})
   
 EOF
@@ -158,7 +160,7 @@ function setup_rac {
 }
 
 
-while getopts "a:cd:e:f:g:hi:jn:p:rs:t:u:z:" opt; do
+while getopts "a:cd:e:f:g:hi:jn:p:rs:t:u:z:x:" opt; do
   case $opt in
     a) DBCA_ARGS="$OPTARG" ;;
     c) CDB="cdb" ;;
@@ -175,6 +177,7 @@ while getopts "a:cd:e:f:g:hi:jn:p:rs:t:u:z:" opt; do
     s) CHARSET="$OPTARG" ;;
     t) DB_TYPE="$OPTARG" ;;
     u) DB_UNIQUE_NAME="$OPTARG" ;;
+    x) SID_PREFIX="$OPTARG" ;;
     z) FRA_SIZE="$OPTARG" ;;
     *)
       echo "Error: unknown program option"
@@ -262,6 +265,12 @@ else
 fi
 SID=${SID%%.*}
 
+if [ -z "$SID_PREFIX" ]; then
+  SID_OPTION="$SID"
+else
+  SID_OPTION="$SID_PREFIX"
+fi
+
 [ -n "$INIT_PARAMS" ] && INIT_PARAMS="-initParams ${INIT_PARAMS}"
 
 if [ -z "$RAC" ]; then
@@ -275,9 +284,13 @@ if [ -n "$CHARSET" ]; then
   CHARSET="-characterSet $CHARSET"
 fi
 
+if [ -n "$SID" ]; then
+  SID_PREFIX="-sid $SID"
+fi
+
 DBCA_CMD=$(echo "dbca -createDatabase -silent $CHARSET \
  -responseFile $RSP_FILE \
- -gdbName $DB_NAME -sid $SID \
+ -gdbName $DB_NAME -sid $SID_OPTION \
  -sysPassword $PWD -systemPassword $PWD \
  $DATAFILE_DEST $RAC_OPTIONS $INIT_PARAMS $RECO \
  $TEMPLATE_NAME $DBCA_CDB $OMF $DBCA_ARGS")

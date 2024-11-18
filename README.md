@@ -1,6 +1,6 @@
 # Oracle Database Scripts  
 
-Version: 1.0.8
+Version: 1.0.9
 
 This repository contains Bash scripts for installing Oracle database software 
 and creating a new database in silent mode. The scripts were tested on 
